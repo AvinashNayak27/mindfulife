@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Modal from "react-modal";
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const posts = await prisma.post.findMany();
   const serializedPosts = JSON.stringify(posts);
   console.log(serializedPosts);
@@ -15,7 +15,7 @@ export async function getStaticProps() {
 }
 export default function Board({ posts }) {
   posts = JSON.parse(posts);
-  const [newPost, setNewPost] = useState(""); 
+  const [newPost, setNewPost] = useState("");
   const user = useUser();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +58,7 @@ export default function Board({ posts }) {
       console.error(error);
     }
     setNewPost("");
-    router.refresh()
+    router.refresh();
   };
   function adjustPosition(positions, i) {
     const post = positions[i];
