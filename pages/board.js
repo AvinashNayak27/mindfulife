@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import prisma from "@/lib/prisma";
 import Modal from "react-modal";
 export async function getStaticProps() {
@@ -58,7 +58,7 @@ export default function Board({ posts }) {
       console.error(error);
     }
     setNewPost("");
-    // router.reload();
+    router.refresh()
   };
   function adjustPosition(positions, i) {
     const post = positions[i];
