@@ -15,7 +15,7 @@ export async function getStaticProps() {
 }
 export default function Board({ posts }) {
   posts = JSON.parse(posts);
-  const [newPost, setNewPost] = useState("");
+  const [newPost, setNewPost] = useState(""); 
   const user = useUser();
   const router = useRouter();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +58,7 @@ export default function Board({ posts }) {
       console.error(error);
     }
     setNewPost("");
-    router.reload();
+    // router.reload();
   };
   function adjustPosition(positions, i) {
     const post = positions[i];
