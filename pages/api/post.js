@@ -1,8 +1,8 @@
 import prisma from "@/lib/prisma";
 
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ message: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
   }
 
   const { content, authorId } = req.body;
@@ -17,6 +17,6 @@ export default async function handler(req, res) {
     res.status(201).json(post);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Failed to create post' });
+    res.status(500).json({ message: "Failed to create post" });
   }
 }
