@@ -1,7 +1,17 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
-export default function Home() {
+import { useEffect, useState } from "react";
+import prisma from "@/lib/prisma";
+export async function getServerSideProps() {
+  const users = await prisma.user.findMany();
+  const serializedUsers = JSON.stringify(users);
+  console.log(serializedUsers);
+
+  return {
+    props: { users: serializedUsers },
+  };
+}
+export default function Home({ users }) {
   const user = useUser();
   const router = useRouter();
   useEffect(() => {
@@ -9,6 +19,35 @@ export default function Home() {
       alert("sign in to get started");
     }
   }, [router.query]);
+  const handleSubmit = async () => {
+    try {
+      const body = {
+        email: user.user.emailAddresses[0].emailAddress,
+        authorId: user.user.id,
+        name: user.user.firstName,
+      };
+      await fetch("/api/user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  users = JSON.parse(users);
+  console.log(users)
+  const emails = users.map((user) => user.email);
+  console.log(emails);
+  if (user.isSignedIn) {
+    const emailToCheck = user.user.emailAddresses[0].emailAddress;
+    if (emails.includes(emailToCheck)) {
+      console.log(`${emailToCheck} exists in the emails array`);
+    } else {
+      console.log(`${emailToCheck} does not exist in the emails array`);
+      handleSubmit();
+    }
+  }
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -43,11 +82,13 @@ export default function Home() {
                   Journal
                 </a>
                 {!user.isSignedIn && (
-                  <SignInButton mode="modal">
-                    <button className="bg-blue-700 hover:bg-blue-800 text-white py-2 px-3 rounded-md">
-                      Sign In
-                    </button>
-                  </SignInButton>
+                  <>
+                    <SignInButton mode="modal">
+                      <button className="bg-blue-700 hover:bg-blue-800 text-white py-2 px-3 rounded-md">
+                        Sign In
+                      </button>
+                    </SignInButton>
+                  </>
                 )}
                 {!!user.isSignedIn && (
                   <SignOutButton>
@@ -191,12 +232,12 @@ export default function Home() {
                       <g
                         fill="none"
                         stroke="currentColor"
-                        stroke-linejoin="round"
-                        stroke-width="4"
+                        strokeLinejoin="round"
+                        strokeWidth="4"
                       >
                         <path d="M8 7h32v24H8z" />
                         <path
-                          stroke-linecap="round"
+                          strokeLinecap="round"
                           d="M4 7h40M15 41l9-10l9 10M16 13h16m-16 6h12m-12 6h6"
                         />
                       </g>
